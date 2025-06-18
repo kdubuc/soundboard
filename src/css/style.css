@@ -1,0 +1,23 @@
+html {
+  font-size: 12px;
+}
+
+.btn.key {
+  width: 175px;
+  height: 100px;
+  border-radius: 10px;
+  background-color: #333;
+  color: white;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.1s ease;
+}
+
+.btn.key:hover {
+  background-color: #444;
+}
+
+.btn.key.playing {
+  background-color: #555;
+  border: 1px solid #007dc7;
+}
