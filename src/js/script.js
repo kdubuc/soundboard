@@ -75,8 +75,13 @@ $( document ).ready(function() {
 
     // Load configurations from user JSON file
     document.querySelector('#fileItem').addEventListener('change', async function(event) {
+        // Check if a file is selected, if not, 
+        if (this.files.length !== 1) {
+            throw new Error("Please select a file to load the soundboard configuration.");
+        }
+
         // Read local JSON file to get the soundboard configuration
-        const soundboardConfigUrl = 'config/qvgdm.json';
+        const soundboardConfigUrl = URL.createObjectURL(this.files[0]);
 
         // Fetch the soundboard configuration
         const r = await fetch(soundboardConfigUrl);
