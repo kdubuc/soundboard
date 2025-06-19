@@ -1,0 +1,9 @@
+{
+    "_name": "Test sample",
+    "_description": "This is a sample soundboard configuration for testing purposes.",
+    "general": [
+        { "title": "Pygmy Shrew", "sound": "https://sound-effects-media.bbcrewind.co.uk/mp3/NHU05085149.mp3" },
+        { "title": "Atmospheres Open Field", "sound": "https://sound-effects-media.bbcrewind.co.uk/mp3/07028064.mp3", "looped": true },
+        { "title": "Heavy Explosion", "sound": "https://sound-effects-media.bbcrewind.co.uk/mp3/07037326.mp3", "interupt": true }
+    ]
+}
