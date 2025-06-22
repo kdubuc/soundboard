@@ -31,14 +31,43 @@ $( document ).ready(function() {
 
         $('#title').text(name);
         $('#subtitle').text(description);
-
-        document.title = name + ' - Soundboard HTML';
     }
 
     // Build the soundboard buttons dynamically
-    function buildSoundboard(config) {
-        const soundboardContainer = document.getElementById('soundboard');
-        soundboardContainer.innerHTML = ''; // Clear existing content
+    function addSoundboard(config) {
+        const id = generateUniqueId('soundboard');
+        const name = config['_name'] || 'default name';
+
+        // Add a tab button for the soundboard
+        const soundboardTab = document.createElement('li');
+        soundboardTab.classList.add('nav-item');
+        soundboardTab.setAttribute('role', 'presentation');
+        const soundboardButton = document.createElement('button');
+        soundboardButton.classList.add('nav-link');
+        soundboardButton.setAttribute('data-bs-toggle', 'tab');
+        soundboardButton.setAttribute('data-bs-target', '#' + id);
+        soundboardButton.setAttribute('type', 'button');
+        soundboardButton.setAttribute('role', 'tab');
+        soundboardButton.textContent = name;
+        document.querySelector('#tabs').appendChild(soundboardTab);
+        soundboardTab.appendChild(soundboardButton);
+
+        // Create the soundboard container
+        const soundboardContainer = document.createElement('div');
+        soundboardContainer.classList.add('tab-pane');
+        soundboardContainer.setAttribute('role', 'tabpanel');
+        soundboardContainer.setAttribute('tabindex', '0');
+        soundboardContainer.setAttribute('id', id);
+
+        // Add a close button to the soundboard tab
+        const closeButton = document.createElement('button');
+        closeButton.classList.add('btn-close');
+        closeButton.setAttribute('aria-label', 'Close');
+        soundboardButton.appendChild(closeButton);
+        closeButton.addEventListener('click', function() {
+            soundboardTab.remove();
+            soundboardContainer.remove();
+        });
 
         for (const [key, sounds] of Object.entries(config)) {
             // if key begins with an underscore, skip it
@@ -66,8 +95,35 @@ $( document ).ready(function() {
             });
 
             soundboardContainer.appendChild(card);
+            document.querySelector('#soundboard').appendChild(soundboardContainer);
         }
+
+        return id;
     }
+
+    function makeSoundboardActive(id) {
+        // Remove the active class from all tabs
+        document.querySelectorAll('.nav-link').forEach(tab => {
+            tab.classList.remove('active');
+        });
+
+        // Remove the active class from all tab panes
+        document.querySelectorAll('.tab-pane').forEach(pane => {
+            pane.classList.remove('active');
+        });
+
+        // Add the active class to the selected tab
+        const activeTab = document.querySelector(`.nav-link[data-bs-target="#${id}"]`);
+        if (activeTab) {
+            activeTab.classList.add('active');
+        }
+
+        // Add the active class to the selected tab pane
+        const activePane = document.querySelector(`#${id}`);
+        if (activePane) {
+            activePane.classList.add('active');
+        }
+    };
 
     /**
      * -- Soundboard routines --
@@ -94,10 +150,11 @@ $( document ).ready(function() {
 
         // Build the soundboard on page load
         setupTheme(soundboard);
-        buildSoundboard(soundboard);
+        const soundboardId = addSoundboard(soundboard);
+        makeSoundboardActive(soundboardId);
 
         // Handle keydown events to play sounds
-        document.querySelectorAll('.key').forEach(key => key.addEventListener('click', async function (event) {
+        document.querySelectorAll(`#${soundboardId} .key`).forEach(key => key.addEventListener('click', async function (event) {
             // Ensure the element has a data-id
             const elementId = event.currentTarget.getAttribute('data-id');
             if (!elementId) return;
@@ -167,7 +224,7 @@ $( document ).ready(function() {
         const keyLetter = event.key.toUpperCase();
 
         // Check if the keyCode is in the soundboard
-        const key = document.querySelector(`.key[data-key="${keyLetter}"]`);
+        const key = document.querySelector(`.tab-pane.active .key[data-key="${keyLetter}"]`);
         if( !key ) return;
 
         // Trigger the click event on the key to play the sound
