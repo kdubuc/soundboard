@@ -1,4 +1,4 @@
-$( document ).ready(function() {
+$( document ).ready(async function() {
 
     /**
      * -- Helpers functions --
@@ -92,6 +92,14 @@ $( document ).ready(function() {
         closeButton.addEventListener('click', function() {
             soundboardTab.remove();
             soundboardContainer.remove();
+
+            // remove the soundboard from local storage
+            let soundboardConfigurations = [];
+            if (localStorage.getItem('soundboardConfigurations')) {
+                soundboardConfigurations = JSON.parse(localStorage.getItem('soundboardConfigurations'));
+            }
+            soundboardConfigurations = soundboardConfigurations.filter(sb => sb['_name'] !== name);
+            localStorage.setItem('soundboardConfigurations', JSON.stringify(soundboardConfigurations));
         });
 
         for (const [key, sounds] of Object.entries(config)) {
@@ -190,9 +198,25 @@ $( document ).ready(function() {
         triggerToastNotification(config['_name'] || 'default name', config['_description'] || 'default description');
     }
 
+    // Load soundboard configurations from local storage
+    async function loadSoundboardConfigurations() {
+        // Check if the local storage has soundboard configurations
+        if (localStorage.getItem('soundboardConfigurations')) {
+            // Parse the soundboard configurations from local storage
+            const soundboardConfigurations = JSON.parse(localStorage.getItem('soundboardConfigurations'));
+            // Iterate through each soundboard configuration
+            for (const config of soundboardConfigurations) {
+                // Build the soundboard with the configuration
+                buildSoundboard(config);
+            }
+        }
+    }
+
     /**
      * -- Soundboard routines --
      */
+
+    await loadSoundboardConfigurations();
 
     // Load configurations from user JSON file
     document.querySelector('#fileItem').addEventListener('change', async function(event) {
@@ -215,6 +239,14 @@ $( document ).ready(function() {
 
         // Build soundboard with the configuration contents
         buildSoundboard(soundboard);
+
+        // Store the soundboard configuration in local storage
+        let soundboardConfigurations = [];
+        if (localStorage.getItem('soundboardConfigurations')) {
+            soundboardConfigurations = JSON.parse(localStorage.getItem('soundboardConfigurations'));
+        }
+        soundboardConfigurations.push(soundboard);
+        localStorage.setItem('soundboardConfigurations', JSON.stringify(soundboardConfigurations));
     });
 
     // Handle when a key is pressed
