@@ -145,7 +145,6 @@ $( document ).ready(function() {
                 document.querySelectorAll('.key.playing').forEach(playingKey => {
                     if (playingKey !== key) {
                         const playingAudio = playingKey.querySelector('audio');
-                        // var fadePoint = playingAudio.duration - 2; // 2 second fade out.
                         $(playingAudio).animate({volume: 0}, 500, 'linear', function() {
                             playingAudio.pause();
                             playingAudio.currentTime = 0;
