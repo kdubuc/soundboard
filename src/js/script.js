@@ -24,13 +24,13 @@ $( document ).ready(function() {
                 </button>`;
     }
 
-    // Setup theme for the soundboard
-    function setupTheme(config) {
-        const name = config['_name'] || 'default name';
-        const description = config['_description'] || 'default description';
+    // Trigger the toast notification
+    function triggerToastNotification(title, contents) {
+        $('#title').text(title);
+        $('#subtitle').text(contents);
 
-        $('#title').text(name);
-        $('#subtitle').text(description);
+        const toastBootstrap = bootstrap.Toast.getOrCreateInstance(document.getElementById('liveToast'));
+        toastBootstrap.show();
     }
 
     // Build the soundboard buttons dynamically
@@ -149,7 +149,6 @@ $( document ).ready(function() {
         const soundboard = await r.json();
 
         // Build the soundboard on page load
-        setupTheme(soundboard);
         const soundboardId = addSoundboard(soundboard);
         makeSoundboardActive(soundboardId);
 
@@ -214,8 +213,7 @@ $( document ).ready(function() {
         }));
 
         // Display a toast notification
-        const toastBootstrap = bootstrap.Toast.getOrCreateInstance(document.getElementById('liveToast'));
-        toastBootstrap.show();
+        triggerToastNotification(config['_name'] || 'default name', config['_description'] || 'default description');
     });
 
     // Handle when a key is pressed
