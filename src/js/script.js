@@ -33,9 +33,34 @@ $( document ).ready(function() {
         toastBootstrap.show();
     }
 
-    // Build the soundboard buttons dynamically
-    function addSoundboard(config) {
-        const id = generateUniqueId('soundboard');
+    // Make the soundboard active
+    function makeSoundboardActive(id) {
+        // Remove the active class from all tabs
+        document.querySelectorAll('.nav-link').forEach(tab => {
+            tab.classList.remove('active');
+        });
+
+        // Remove the active class from all tab panes
+        document.querySelectorAll('.tab-pane').forEach(pane => {
+            pane.classList.remove('active');
+        });
+
+        // Add the active class to the selected tab
+        const activeTab = document.querySelector(`.nav-link[data-bs-target="#${id}"]`);
+        if (activeTab) {
+            activeTab.classList.add('active');
+        }
+
+        // Add the active class to the selected tab pane
+        const activePane = document.querySelector(`#${id}`);
+        if (activePane) {
+            activePane.classList.add('active');
+        }
+    };
+
+    // Build the soundboard and set up event listeners
+    function buildSoundboard(config) {
+        const soundboardId = generateUniqueId('soundboard');
         const name = config['_name'] || 'default name';
 
         // Add a tab button for the soundboard
@@ -45,7 +70,7 @@ $( document ).ready(function() {
         const soundboardButton = document.createElement('button');
         soundboardButton.classList.add('nav-link');
         soundboardButton.setAttribute('data-bs-toggle', 'tab');
-        soundboardButton.setAttribute('data-bs-target', '#' + id);
+        soundboardButton.setAttribute('data-bs-target', '#' + soundboardId);
         soundboardButton.setAttribute('type', 'button');
         soundboardButton.setAttribute('role', 'tab');
         soundboardButton.textContent = name;
@@ -57,7 +82,7 @@ $( document ).ready(function() {
         soundboardContainer.classList.add('tab-pane');
         soundboardContainer.setAttribute('role', 'tabpanel');
         soundboardContainer.setAttribute('tabindex', '0');
-        soundboardContainer.setAttribute('id', id);
+        soundboardContainer.setAttribute('id', soundboardId);
 
         // Add a close button to the soundboard tab
         const closeButton = document.createElement('button');
@@ -98,58 +123,7 @@ $( document ).ready(function() {
             document.querySelector('#soundboard').appendChild(soundboardContainer);
         }
 
-        return id;
-    }
-
-    function makeSoundboardActive(id) {
-        // Remove the active class from all tabs
-        document.querySelectorAll('.nav-link').forEach(tab => {
-            tab.classList.remove('active');
-        });
-
-        // Remove the active class from all tab panes
-        document.querySelectorAll('.tab-pane').forEach(pane => {
-            pane.classList.remove('active');
-        });
-
-        // Add the active class to the selected tab
-        const activeTab = document.querySelector(`.nav-link[data-bs-target="#${id}"]`);
-        if (activeTab) {
-            activeTab.classList.add('active');
-        }
-
-        // Add the active class to the selected tab pane
-        const activePane = document.querySelector(`#${id}`);
-        if (activePane) {
-            activePane.classList.add('active');
-        }
-    };
-
-    /**
-     * -- Soundboard routines --
-     */
-
-    // Load configurations from user JSON file
-    document.querySelector('#fileItem').addEventListener('change', async function(event) {
-        // Check if a file is selected, if not, 
-        if (this.files.length !== 1) {
-            throw new Error("Please select a file to load the soundboard configuration.");
-        }
-
-        // Read local JSON file to get the soundboard configuration
-        const soundboardConfigUrl = URL.createObjectURL(this.files[0]);
-
-        // Fetch the soundboard configuration
-        const r = await fetch(soundboardConfigUrl);
-        if (!r.ok) {
-            throw new Error("Failed to load soundboard configuration");
-        }
-
-        // Parse the JSON response
-        const soundboard = await r.json();
-
-        // Build the soundboard on page load
-        const soundboardId = addSoundboard(soundboard);
+        // make soundboard active (and hide others)
         makeSoundboardActive(soundboardId);
 
         // Handle keydown events to play sounds
@@ -214,6 +188,33 @@ $( document ).ready(function() {
 
         // Display a toast notification
         triggerToastNotification(config['_name'] || 'default name', config['_description'] || 'default description');
+    }
+
+    /**
+     * -- Soundboard routines --
+     */
+
+    // Load configurations from user JSON file
+    document.querySelector('#fileItem').addEventListener('change', async function(event) {
+        // Check if a file is selected, if not, 
+        if (this.files.length !== 1) {
+            throw new Error("Please select a file to load the soundboard configuration.");
+        }
+
+        // Read local JSON file to get the soundboard configuration
+        const soundboardConfigUrl = URL.createObjectURL(this.files[0]);
+
+        // Fetch the soundboard configuration
+        const r = await fetch(soundboardConfigUrl);
+        if (!r.ok) {
+            throw new Error("Failed to load soundboard configuration");
+        }
+
+        // Parse the JSON response
+        const soundboard = await r.json();
+
+        // Build soundboard with the configuration contents
+        buildSoundboard(soundboard);
     });
 
     // Handle when a key is pressed
