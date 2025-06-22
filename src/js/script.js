@@ -13,7 +13,7 @@ $( document ).ready(function() {
     function buildSoundButtonCode(title, data_key, sound, looped, interupt) {
         const elementId = generateUniqueId('key');
         return `<button type="button" class="btn btn-secondary key m-1" data-id="${elementId}" data-key="${data_key}" ${interupt === true ? 'interupt' : ''}>
-                    ${data_key ? "<kbd class=\"btnTitle\">"+data_key+"</kbd><br>" : ""}
+                    ${data_key ? "<kbd class=\"btnTitle fs-5\">"+data_key+"</kbd><br>" : ""}
                     ${title}
                     ${looped === true || interupt === true ? '<br>' : ''}
                     ${looped === true ? '<span class="badge text-bg-warning"">looped</span>' : ''}
