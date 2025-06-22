@@ -97,7 +97,7 @@ $( document ).ready(function() {
         buildSoundboard(soundboard);
 
         // Handle keydown events to play sounds
-        document.querySelectorAll('.key').forEach(key => key.addEventListener('click', function (event) {
+        document.querySelectorAll('.key').forEach(key => key.addEventListener('click', async function (event) {
             // Ensure the element has a data-id
             const elementId = event.currentTarget.getAttribute('data-id');
             if (!elementId) return;
@@ -123,7 +123,7 @@ $( document ).ready(function() {
 
             // Reset the audio to the start and play it
             currentPlayer.currentTime = 0;
-            currentPlayer.play();
+            await currentPlayer.play();
 
             // Progress bar routine (event listener)
             currentPlayer.addEventListener('timeupdate', function (event) {
