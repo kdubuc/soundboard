@@ -19,7 +19,7 @@ $( document ).ready(function() {
                     ${looped === true ? '<span class="badge text-bg-warning"">looped</span>' : ''}
                     ${interupt === true ? '<span class="badge text-bg-warning"">interupt</span>' : ''}
                     <br>
-                    <audio data-id="${elementId}" player" preload="auto" src="${sound}" ${looped === true ? 'loop' : ''}></audio>
+                    <audio data-id="${elementId}" preload="auto" src="${sound}" ${looped === true ? 'loop' : ''}></audio>
                     <progress id="seekbar${elementId}" value="0" max="1"></progress>
                 </button>`;
     }
