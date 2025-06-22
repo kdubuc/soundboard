@@ -156,21 +156,21 @@ $( document ).ready(function() {
             }
         }));
 
-        // Handle when a key is pressed
-        window.addEventListener('keydown', function (event) {
-            // Standardize the key to uppercase
-            const keyLetter = event.key.toUpperCase();
-
-            // Check if the keyCode is in the soundboard
-            const key = document.querySelector(`.key[data-key="${keyLetter}"]`);
-            if( !key ) return;
-
-            // Trigger the click event on the key to play the sound
-            key.click(); 
-        });
-
         // Display a toast notification
         const toastBootstrap = bootstrap.Toast.getOrCreateInstance(document.getElementById('liveToast'));
         toastBootstrap.show();
+    });
+
+    // Handle when a key is pressed
+    window.addEventListener('keydown', function (event) {
+        // Standardize the key to uppercase
+        const keyLetter = event.key.toUpperCase();
+
+        // Check if the keyCode is in the soundboard
+        const key = document.querySelector(`.key[data-key="${keyLetter}"]`);
+        if( !key ) return;
+
+        // Trigger the click event on the key to play the sound
+        key.click(); 
     });
 });
