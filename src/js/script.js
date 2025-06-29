@@ -194,6 +194,44 @@ $( document ).ready(async function() {
             }
         }));
 
+        // Manage the WebSocket feature
+        if (config['_websocket_url']) {
+            // Create a new WebSocket connection
+            const ws = new WebSocket(config['_websocket_url']);
+
+            // Send pong frame to the WebSocket server every 20 seconds
+            setInterval(() => {
+                if (ws.readyState === WebSocket.OPEN) {
+                    ws.send(JSON.stringify({ type: 'ping' }));
+                }
+            }, 20000);
+
+            // Handle incoming messages from the WebSocket
+            ws.onmessage = function(event) {
+                try {
+                    // Parse the incoming message
+                    const message = JSON.parse(event.data);
+                    // Check if the message has a keyCode
+                    if (message.keyCode) {
+                        // Find the key with the matching data_key
+                        const key = document.querySelector(`.key[data-key="${message.keyCode.toUpperCase()}"]`);
+                        if (key) {
+                            // Trigger the click event on the key to play the sound
+                            key.click();
+                        } else {
+                            console.warn(`No key found for keyCode: ${message.keyCode}`);
+                        }
+                    } else {
+                        console.warn('Received message does not contain keyCode :', message);
+                    }
+                }
+                catch (error) {
+                    console.warn('Received message is not a correct JSON :', message);
+                    return;
+                }
+            };
+        }
+
         // Display a toast notification
         triggerToastNotification(config['_name'] || 'default name', config['_description'] || 'default description');
     }
