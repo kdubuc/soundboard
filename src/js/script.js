@@ -198,6 +198,25 @@ $( document ).ready(async function() {
         if (config['_websocket_url']) {
             // Create a new WebSocket connection
             const ws = new WebSocket(config['_websocket_url']);
+            const wsBadge = document.createElement('span');
+            wsBadge.classList.add('badge', 'text-bg-info', 'me-2');
+            wsBadge.textContent = 'WebSocket';
+            soundboardTab.querySelector('.nav-link').prepend(wsBadge);
+
+            // Handle WebSocket connection open event
+            ws.onopen = function() {
+                wsBadge.classList.remove('text-bg-info');
+                wsBadge.classList.add('text-bg-success');
+                wsBadge.textContent = 'WebSocket Connected';
+            }
+            
+            // Handle WebSocket connection error event
+            ws.onerror = function(error) {
+                wsBadge.classList.remove('text-bg-info', 'text-bg-success');
+                wsBadge.classList.add('text-bg-danger');
+                wsBadge.textContent = 'WebSocket Error';
+                console.error('WebSocket error:', error);
+            }
 
             // Send pong frame to the WebSocket server every 20 seconds
             setInterval(() => {
