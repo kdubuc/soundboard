@@ -2,7 +2,7 @@
 
 A fully customizable, browser-based soundboard powered by a simple JSON configuration file. No server required — just open the HTML file in your browser and load your sounds.
 
-## ✨ Features
+## Features
 
 - **JSON-driven configuration** — define your sounds, categories, and behavior in a single JSON file
 - **Multiple soundboards** — load and switch between several soundboard configurations via tabs
@@ -12,7 +12,7 @@ A fully customizable, browser-based soundboard powered by a simple JSON configur
 - **WebSocket support** — trigger sounds remotely by sending messages to a WebSocket endpoint
 - **Persistent sessions** — loaded configurations are saved in `localStorage` and restored on next visit
 
-## 🚀 Usage
+## Usage
 
 ### 1. Open the soundboard
 
@@ -26,7 +26,7 @@ Click the file input in the top navigation bar and select a JSON configuration f
 
 Click any sound button, or press its assigned keyboard key (if a `data_key` is defined).
 
-## 🗂️ Configuration Format
+## Configuration Format
 
 Soundboard configurations are plain JSON files. Here's the structure:
 
