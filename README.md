@@ -1,6 +1,8 @@
 # 🎛️ Web Soundboard
 
-A fully customizable, browser-based soundboard powered by a simple JSON configuration file. No server required — just open the HTML file in your browser and load your sounds.
+A fully customizable, browser-based soundboard powered by a simple JSON configuration file.
+Built with [Vite](https://vitejs.dev/) and [Svelte](https://svelte.dev/), this soundboard allows you to define your own sounds, categories, and behavior without touching any code.
+Ideally suited for role-playing games, shows, or any scenario where you need quick access to sound effects.
 
 ## Features
 
@@ -14,9 +16,9 @@ A fully customizable, browser-based soundboard powered by a simple JSON configur
 
 ## Usage
 
-### 1. Open the soundboard
+### 1. Open the soundboard (dev mode)
 
-Open `src/index.html` in any modern browser. No build step or server needed.
+In development environment, run `npm run dev` to start a local server and open the soundboard in your browser.
 
 ### 2. Load a configuration
 
@@ -32,16 +34,14 @@ Soundboard configurations are plain JSON files. Here's the structure:
 
 ```json
 {
-    "_name": "My Soundboard",
-    "_description": "A short description displayed in the notification toast.",
-    "_websocket_url": "ws://localhost:8080",
-    "category_name": [
-        {
-            "title": "My Sound",
-            "data_key": "A",
-            "sound": "https://example.com/sound.mp3",
-            "looped": false,
-            "interupt": false
-        }
-    ]
+    "_name": "Test sample",
+    "_description": "This is a sample soundboard configuration for testing purposes.",
+    "sections": {
+        "general": [
+            { "title": "Pygmy Shrew", "data_key": "A", "sound": "https://sound-effects-media.bbcrewind.co.uk/mp3/NHU05085149.mp3" },
+            { "title": "Atmospheres Open Field", "sound": "https://sound-effects-media.bbcrewind.co.uk/mp3/07028064.mp3", "looped": true },
+            { "title": "Heavy Explosion", "sound": "https://sound-effects-media.bbcrewind.co.uk/mp3/07037326.mp3", "interrupt": true }
+        ]
+    }
 }
+```
