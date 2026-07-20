@@ -13,6 +13,7 @@
     config : SoundboardConfig;
   }
 
+  // Initialize the soundboards state by loading configurations from localStorage, or start with an empty array if none are found or if parsing fails
   const soundboards = $state<SoundboardEntry[]>((() => {
     try {
       return (JSON.parse(localStorage.getItem(STORAGE_KEY) ?? '[]') as SoundboardConfig[]).map(
@@ -91,6 +92,7 @@
   // Load a built-in soundboard configuration by index
   function loadBuiltinConfig(index : number) : void {
     const builtinConfigs : SoundboardConfig[] = [
+        // Built-in test sample configuration index 0
         {
           _name: "Test sample",
           _description: "This is a sample soundboard configuration for testing purposes.",
@@ -174,7 +176,7 @@
           <input type="file" id="upload-config" class="d-none" accept="application/json" onchange={loadFile} />
         </li>
         <li>
-          <label class="dropdown-item mb-0" for="upload-package">Upload Custom Sound Package</label>
+          <label class="dropdown-item mb-0" for="upload-package">Upload Sound Package</label>
           <input type="file" id="upload-package" class="d-none" accept="application/zip" onchange={loadPackage} />
         </li>
       </ul>
@@ -182,11 +184,12 @@
   </div>
 </nav>
 
+<!-- Main Container -->
 <div class="container-fluid">
 
   <!-- Soundboard Tabs -->
   <ul class="nav nav-tabs mb-4" role="tablist">
-    {#each soundboards as { id, config }, i (id)}
+    {#each soundboards as soundboard, i (soundboard.id)}
       <li class="nav-item" role="presentation">
         <button
           class="nav-link"
@@ -195,13 +198,13 @@
           role="tab"
           onclick={() => (activeIndex = i)}
         >
-          {#if wsStatuses[id]}
-            <span class="badge me-2 {wsStatusClass(wsStatuses[id])}">
-              {wsStatusLabel(wsStatuses[id])}
+          {#if wsStatuses[soundboard.id]}
+            <span class="badge me-2 {wsStatusClass(wsStatuses[soundboard.id])}">
+              {wsStatusLabel(wsStatuses[soundboard.id])}
             </span>
           {/if}
 
-          {config._name ?? 'Soundboard'}
+          {soundboard.config._name ?? 'Soundboard'}
           
           <a
             class="btn-close ms-2"
@@ -219,16 +222,17 @@
 
   <!-- Active Soundboard Contents -->
   <div class="tab-content">
-    {#each soundboards as { id, config }, i (id)}
+    {#each soundboards as soundboard, i (soundboard.id)}
       <Soundboard
-        {config}
+        config={soundboard.config}
         active={i === activeIndex}
-        onWsStatus={(status) => (wsStatuses[id] = status)}
+        onWsStatus={(status) => (wsStatuses[soundboard.id] = status)}
       />
     {/each}
   </div>
 </div>
 
+<!-- Toast Notification Element -->
 <div class="toast-container position-fixed bottom-0 end-0 p-3">
   <div bind:this={toastEl} class="toast" role="alert" aria-live="assertive" aria-atomic="true">
     <div class="toast-header">
