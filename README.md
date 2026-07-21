@@ -12,7 +12,6 @@ Ideally suited for role-playing games, shows, or any scenario where you need qui
 - **Loop & interrupt modes** — loop ambient sounds or interrupt all playing sounds with a single trigger
 - **Progress bar** — visual playback progress indicator on each sound button
 - **WebSocket support** — trigger sounds remotely by sending messages to a WebSocket endpoint
-- **Persistent sessions** — loaded configurations are saved in `localStorage` and restored on next visit
 
 ## Usage
 

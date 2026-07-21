@@ -1,34 +1,21 @@
 <script lang="ts">
-  import { onMount, tick } from 'svelte';
-  import { Toast } from 'bootstrap';
+  import { onMount } from 'svelte';
   import type { SoundboardConfig } from './types';
   import Soundboard from './Soundboard.svelte';
   import JSZip from 'jszip';
-
-  // Define a constant key for storing soundboard configurations in localStorage
-  const STORAGE_KEY = 'soundboardConfigurations';
+  import Toast from './Toast.svelte';
+  import { showToast } from './toasts.svelte';
 
   interface SoundboardEntry {
     id : string;
     config : SoundboardConfig;
   }
 
-  // Initialize the soundboards state by loading configurations from localStorage, or start with an empty array if none are found or if parsing fails
-  const soundboards = $state<SoundboardEntry[]>((() => {
-    try {
-      return (JSON.parse(localStorage.getItem(STORAGE_KEY) ?? '[]') as SoundboardConfig[]).map(
-        (config) => ({ id: crypto.randomUUID(), config })
-      );
-    } catch {
-      localStorage.removeItem(STORAGE_KEY);
-      return [];
-    }
-  })());
+  // Initialize the soundboards state
+  const soundboards = $state<SoundboardEntry[]>([]);
   
   let activeIndex = $state(0);
   let wsStatuses = $state<Record<string, string>>({});
-  let toast = $state<{ title : string; subtitle : string } | null>(null);
-  let toastEl: HTMLElement | undefined = $state();
 
   // Load a soundboard configuration from a JSON file and add it to the list of soundboards
   async function loadFile(event : Event) : Promise<void> {
@@ -70,23 +57,17 @@
       }
     }
 
-    addSoundboard(config, false); // Don't save in localStorage since the sounds are blob URLs and won't persist across sessions
+    addSoundboard(config);
   }
 
   // Add a new soundboard configuration to the list and persist it to localStorage
-  async function addSoundboard(config : SoundboardConfig, saveInLocalStorage = true) : Promise<void> {
+  async function addSoundboard(config : SoundboardConfig) : Promise<void> {
     soundboards.push({ id: crypto.randomUUID(), config }); // Add the new soundboard to the list
-    if (saveInLocalStorage) {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(soundboards.map((sb) => sb.config))); // Persist soundboards to localStorage (without session-only IDs)
-    }
+
     activeIndex = soundboards.length - 1; // Set the newly loaded soundboard as active
 
-    // Show Bootstrap toast whenever a new soundboard is loaded
-    toast = { title: config._name ?? 'Soundboard loaded', subtitle: config._description ?? 'A newly loaded soundboard was added.' };
-    await tick(); // wait for DOM to reflect new toast content
-    if (toastEl) {
-      Toast.getOrCreateInstance(toastEl).show();
-    }
+    // Show a toast notification to indicate that the soundboard has been loaded
+    showToast(config._name ?? 'Soundboard loaded', config._description ?? 'A newly loaded soundboard was added.');
   }
 
   // Load a built-in soundboard configuration by index
@@ -118,7 +99,6 @@
   function closeSoundboard(index : number) {
     const { id } = soundboards[index];
     soundboards.splice(index, 1);
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(soundboards.map((sb) => sb.config)));
     delete wsStatuses[id];
     if (activeIndex >= soundboards.length) {
       activeIndex = Math.max(0, soundboards.length - 1);
@@ -233,16 +213,4 @@
 </div>
 
 <!-- Toast Notification Element -->
-<div class="toast-container position-fixed bottom-0 end-0 p-3">
-  <div bind:this={toastEl} class="toast" role="alert" aria-live="assertive" aria-atomic="true">
-    <div class="toast-header">
-      <strong class="me-auto">Soundboard loaded</strong>
-      <small>now</small>
-      <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
-    </div>
-    <div class="toast-body">
-      <p>{toast?.title ?? ''}</p>
-      <p>{toast?.subtitle ?? ''}</p>
-    </div>
-  </div>
-</div>
+<Toast />
