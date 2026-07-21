@@ -9,13 +9,13 @@
   interface SoundboardEntry {
     id : string;
     config : SoundboardConfig;
+    wsStatus? : "connecting" | "connected" | "error"; // Optional WebSocket status for this soundboard
   }
 
   // Initialize the soundboards state
   const soundboards = $state<SoundboardEntry[]>([]);
   
   let activeIndex = $state(0);
-  let wsStatuses = $state<Record<string, string>>({});
 
   // Load a soundboard configuration from a JSON file and add it to the list of soundboards
   async function loadFile(event : Event) : Promise<void> {
@@ -31,6 +31,7 @@
     addSoundboard(config);
   }
 
+  // Load a soundboard configuration from a ZIP package, and add it to the list of soundboards
   async function loadPackage(event : Event) : Promise<void> {
     const input = event.target as HTMLInputElement;
     if (!input.files?.length) {
@@ -60,7 +61,7 @@
     addSoundboard(config);
   }
 
-  // Add a new soundboard configuration to the list and persist it to localStorage
+  // Add a new soundboard configuration to the list
   async function addSoundboard(config : SoundboardConfig) : Promise<void> {
     soundboards.push({ id: crypto.randomUUID(), config }); // Add the new soundboard to the list
 
@@ -70,7 +71,7 @@
     showToast(config._name ?? 'Soundboard loaded', config._description ?? 'A newly loaded soundboard was added.');
   }
 
-  // Load a built-in soundboard configuration by index
+  // Load a built-in soundboard configuration by index, and add it to the list of soundboards
   function loadBuiltinConfig(index : number) : void {
     const builtinConfigs : SoundboardConfig[] = [
         // Built-in test sample configuration index 0
@@ -120,20 +121,24 @@
   });
 
   // Utility functions to determine WebSocket status classes and labels
-  function wsStatusClass(status : string) : string {
+  function wsStatusClass(status : "connecting" | "connected" | "error") : string {
     if (status === 'connected') {
-      return 'text-bg-success'
+      return 'text-bg-success';
     };
     if (status === 'error') {
-      return 'text-bg-danger'
-    };
+      return 'text-bg-danger';
+    }
     return 'text-bg-info';
   }
 
   // Utility function to get a human-readable label for WebSocket status
-  function wsStatusLabel(status : string) {
-    if (status === 'connected') return 'WebSocket Connected';
-    if (status === 'error') return 'WebSocket Error';
+  function wsStatusLabel(status : "connecting" | "connected" | "error") : string {
+    if (status === 'connected') {
+      return 'WebSocket Connected';
+    }
+    if (status === 'error') {
+      return 'WebSocket Error';
+    }
     return 'WebSocket';
   }
 </script>
@@ -178,9 +183,9 @@
           role="tab"
           onclick={() => (activeIndex = i)}
         >
-          {#if wsStatuses[soundboard.id]}
-            <span class="badge me-2 {wsStatusClass(wsStatuses[soundboard.id])}">
-              {wsStatusLabel(wsStatuses[soundboard.id])}
+          {#if soundboard.wsStatus}
+            <span class="badge me-2 {wsStatusClass(soundboard.wsStatus)}">
+              {wsStatusLabel(soundboard.wsStatus)}
             </span>
           {/if}
 
@@ -206,7 +211,7 @@
       <Soundboard
         config={soundboard.config}
         active={i === activeIndex}
-        onWsStatus={(status) => (wsStatuses[soundboard.id] = status)}
+        onWsStatus={(status) => (soundboard.wsStatus = status)}
       />
     {/each}
   </div>

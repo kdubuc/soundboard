@@ -6,7 +6,7 @@
   interface Props {
     config : SoundboardConfig;
     active : boolean;
-    onWsStatus ?: (status: string) => void;
+    onWsStatus ?: (status: "connecting" | "connected" | "error") => void;
   }
 
   // Props passed to the Soundboard component
