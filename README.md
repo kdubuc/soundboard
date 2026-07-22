@@ -1,5 +1,9 @@
 # 🎛️ Web Soundboard
 
+<p align="center">
+    <img alt="Soundboard in action" src="./screenshot.png" width="600" />
+</p>
+
 A fully customizable, browser-based soundboard powered by a simple JSON configuration file.
 Built with [Vite](https://vitejs.dev/) and [Svelte](https://svelte.dev/), this soundboard allows you to define your own sounds, categories, and behavior without touching any code.
 Ideally suited for role-playing games, shows, or any scenario where you need quick access to sound effects.
